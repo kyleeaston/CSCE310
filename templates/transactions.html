@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/paintings.css')}}">
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='images/wallpaper.png') }}");
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <h1 class="page-title">Our Current Transactions</h1>
+
+        <div class="pagination">
+            <span>Page {{pagination.page}} of {{pagination.pages}}</span>
+            <div class="pagination-buttons">
+                {% if pagination.has_prev %}
+                <a class = "pagination-button" href="{{ url_for('transactions',page=pagination.prev_num, query=query, sort_by = sort_by) }}">Previous</a>
+                {% endif %}
+                {% if pagination.has_next %}
+                <a class = "pagination-button" href="{{ url_for('transactions', page=pagination.next_num, query=query, sort_by = sort_by) }}">Next</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <form id = "search-form" class="search-form" action="/transactions" method = "get">
+            <input type="text" name="query" value = "{{ query }}" placeholder="Search transactions..." class="search-input">
+            <select id = "sort-by" name="sort_by" class = "search-input">
+                <option value="buyer_fname" {% if sort_by == 'buyer_fname' %}selected{% endif %}>Sort by Buyer First Name</option>
+                <option value="buyer_lname" {% if sort_by == 'buyer_lname' %}selected{% endif %}>Sort by Buyer Last Name</option>
+                <option value="seller_fname" {% if sort_by == 'seller_fname' %}selected{% endif %}>Sort by Seller First Name</option>
+                <option value="seller_lname" {% if sort_by == 'seller_lname' %}selected{% endif %}>Sort by Seller Last Name</option>
+                <option value="timestamp" {% if sort_by == 'timestamp' %}selected{% endif %}> Sort by Timestamp</option>
+                <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Sort by Title</option>
+            </select>
+            <button type="submit" class = "search-button">Search</button>
+            <a href = "/transactions" class="search-button-reset">Reset Search</a>
+        </form>
+
+        {% if transactions %}
+        <ul class="painting-list">
+            {% for transaction in transactions %}
+                <li class="painting-item">
+                    <h2 class="painting-title">
+                        {% for art_piece in art_pieces %}
+                            {% if art_pice.piece_id == transaction.piece_id %}
+                                {{art_piece.title}}
+                            {% endif %}
+                        {% endfor %}
+                    </h2>
+                    <p class="painting-details">Buyer:
+                        {% for user in users %}
+                            {% if user.user_id == transaction.buyer_id %}
+                                {{user.user_fname}} {{user.user_lname}}
+                            {% endif %}
+                        {% endfor %}
+                    </p>
+                    <p class="painting-details">Seller:
+                        {% for user in users %}
+                            {% if user.user_id == transaction.seller_id %}
+                                {{user.user_fname}} {{user.user_lname}}
+                            {% endif %}
+                        {% endfor %}
+                    </p>
+                    <p class="painting-details">Timestamp: {{ transaction.timestamp }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="no-results">No transactions found for your search query.</p>
+        <a href = "/paintings" class="no-results">Go back to all transactions</a>
+        {% endif %}
+        <div class="pagination">
+            <span>Page {{pagination.page}} of {{pagination.pages}}</span>
+            <div class="pagination-buttons">
+                {% if pagination.has_prev %}
+                <a class = "pagination-button" href="{{ url_for('transactions',page=pagination.prev_num, query=query, sort_by = sort_by) }}">Previous</a>
+                {% endif %}
+                {% if pagination.has_next %}
+                <a class = "pagination-button" href="{{ url_for('transactions', page=pagination.next_num, query=query, sort_by = sort_by) }}">Next</a>
+                {% endif %}
+            </div>
+        </div>
+        <script src="{{url_for('static', filename='js/paintings.js')}}"></script>
+    </div>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{% extends "layouts/table_layout.html" %}
+
+{% block title_table %}
+<h2 style="color: white;">Users</h2> 
+{% endblock %}
+
+{% block body_table %}
+<table>
+    <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+        <th>Password</th>
+        <th>Role</th>
+    </tr>
+    {% for fname, lname, email, password, role in userlist%}
+    <tr>
+        <td>{{ fname }}</td>
+        <td>{{ lname }}</td>
+        <td>{{ email }}</td>
+        <td>{{ password }}</td>
+        <td>{{ role }}</td>
+    </tr>
+    {% endfor %}    
+</table>
+{% endblock %}

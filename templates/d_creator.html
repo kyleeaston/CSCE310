@@ -1,0 +1,21 @@
+{% extends "layouts/form_layout.html" %}
+
+{% block title_form %}
+<h2 style="color: white;">Delete Creators</h2> 
+{% endblock %}
+
+{% block body_form %}
+<form action="{{ url_for('creatordelete')}}" method="post">
+  <label for="creatornames">Select a creator</label>
+  <select name="creatornames">
+    {% for name in creatornames %}
+      <option value="{{ name }}">{{ name }}</option>
+    {% endfor %} 
+  </select>
+  <div>
+    <button type="submit" name="delete_button" value="delete_button"> Delete </button>
+  </div>
+</form>
+<p style="color: white">{{ msg }}</p>
+
+{% endblock %}

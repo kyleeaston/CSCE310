@@ -1,0 +1,50 @@
+{% extends "layouts/base.html" %}
+
+{% block body_base %}
+
+<style>
+    form {
+    background-color: rgba(255, 255, 255, 0.8); /* White background with 80% opacity */
+    border-collapse: collapse;
+    width: 50%;
+    text-align: center; /* Center align text */
+    }
+
+    form div {
+        margin: 10px 0; /* Add some margin to space out the input fields */
+    }
+
+    form label {
+        display: block; /* Ensure labels are block elements */
+        margin-bottom: 5px; /* Add some space below the label */
+    }
+
+    form input[type="text"], form select {
+        width: 80%; /* Make inputs and selects take 80% of the form's width */
+        margin: 0 auto; /* Center the inputs and selects horizontally */
+        display: block; /* Ensure inputs and selects are block elements */
+    }
+
+    form button {
+        display: block; /* Ensure button is a block element */
+        margin: 20px auto; /* Center the button and add some margin at the top and bottom */
+        padding: 10px 20px; /* Add some padding to the button */
+    }
+</style>
+
+{% block title_form %} {% endblock %}
+{% block body_form %} {% endblock %}
+
+<a href="/"><button> Go back </button></a>
+
+{% if feedback_message != None %}
+    {% if feedback_type %}
+        <span style="color:green">{{feedback_message}}</span>
+    {% else %}
+    <span style="color:red">{{feedback_message}}</span>
+    {% endif %}
+{% endif %}
+
+<!-- <script src="{{url_for('static', filename='confirmDelete.js')}}"></script> -->
+
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Buy {% endblock %}
+
+{% block body_base %} 
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flashes">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}"> {{message}} </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    <h1 class="page-title">Sellable Paintings</h1>
+
+    <div class="pagination">
+        <span>Page {{pagination.page}} of {{pagination.pages}}</span>
+        <div class="pagination-buttons">
+            {% if pagination.has_prev %}
+            <a class = "pagination-button" href="{{ url_for('buy_menu',page=pagination.prev_num, query=query, sort_by = sort_by) }}">Previous</a>
+            {% endif %}
+            {% if pagination.has_next %}
+            <a class = "pagination-button" href="{{ url_for('buy_menu', page=pagination.next_num, query=query, sort_by = sort_by) }}">Next</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <form id = "search-form" class="search-form" action="/buy_menu" method = "get">
+        <input type="text" name="query" value = "{{ query }}" placeholder="Search paintings..." class="search-input">
+        <select id = "sort-by" name="sort_by" class = "search-input">
+            <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Sort by Title</option>
+            <option value="year" {% if sort_by == 'year' %}selected{% endif %}> Sort by Year</option>
+        </select>
+        <button type="submit" class = "search-button">Search</button>
+        <a href = "/buy_menu" class="search-button-reset">Reset Search</a>
+    </form>
+
+    {% if paintings %}
+    <ul class="painting-list">
+        {% for painting in paintings %}
+            <li class="painting-item">
+                <h2 class="painting-title">{{ painting.title }}</h2>
+                <p class="painting-details">Artist:
+                    {% for creator in creators %}
+                        {% if creator.creator_id == painting.creator_id %}
+                            {{creator.creator_fname}} {{creator.creator_lname}}
+                        {% endif %}
+                    {% endfor %}
+                </p>
+                <p class="painting-details">Year: {{ painting.year_finished }}</p>
+                <p class="painting-details">Period: {{ painting.period }}</p>
+                <p class="painting-details">Price: ${{ painting.cost }}</p>
+                <img src="{{ painting.photo_link }}" alt="{{ painting.title }}" style="max-width: 50vh; max-height: 50vh;">
+                <form action="{{ url_for('buy_painting', piece_id =painting.piece_id) }}" method="post">
+                    <button type="submit" class="buy-button">Buy</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="no-results">No paintings found for your search query.</p>
+    <a href = "/paintings" class="no-results">Go back to all paintings</a>
+    {% endif %}
+    <div class="pagination">
+        <span>Page {{pagination.page}} of {{pagination.pages}}</span>
+        <div class="pagination-buttons">
+            {% if pagination.has_prev %}
+            <a class = "pagination-button" href="{{ url_for('buy_menu',page=pagination.prev_num, query=query, sort_by = sort_by) }}">Previous</a>
+            {% endif %}
+            {% if pagination.has_next %}
+            <a class = "pagination-button" href="{{ url_for('buy_menu', page=pagination.next_num, query=query, sort_by = sort_by) }}">Next</a>
+            {% endif %}
+        </div>
+    </div>
+    <script src="{{url_for('static', filename='js/paintings.js')}}"></script>
+</div>
+{% endblock %}

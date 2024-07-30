@@ -1,0 +1,26 @@
+{% extends "layouts/table_layout.html" %}
+
+{% block title_table %}
+<h2 style="color: white;">Creators</h2> 
+{% endblock %}
+
+{% block body_table %}
+<table>
+    <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Birth Place</th>
+        <th>Birth Date</th>
+        <th>Death Date</th>
+    </tr>
+    {% for fname, lname, birthplace, bdate, ddate in creatorlist%}
+    <tr>
+        <td>{{ fname }}</td>
+        <td>{{ lname }}</td>
+        <td>{{ birthplace }}</td>
+        <td>{{ bdate }}</td>
+        <td>{{ ddate }}</td>
+    </tr>
+    {% endfor %}    
+</table>
+{% endblock %}

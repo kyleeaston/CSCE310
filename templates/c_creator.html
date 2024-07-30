@@ -1,0 +1,30 @@
+{% extends "layouts/form_layout.html" %}
+
+{% block title_form %}
+<h2 style="color: white;">Create Creators</h2> 
+{% endblock %}
+
+{% block body_form %}
+<form action="{{ url_for('creatorcreate')}}" method="post">
+    <h5>Enter the creator details</h5>
+    <div>
+        <input type="text" name="cfname" placeholder="First Name">
+    </div>
+    <div>
+        <input type="text" name="clname" placeholder="Last Name">
+    </div>
+    <div>
+        <input type="text" name="country" placeholder="Birth Country">
+    </div>
+    <div>
+        <input type="date" name="bdate" placeholder="Birth Date">
+    </div>
+    <div>
+        <input type="date" name="ddate" placeholder="Death Date">
+    </div>
+    <div>
+        <button type="submit">Create</button>
+    </div>
+</form>
+
+{% endblock %}

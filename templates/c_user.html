@@ -1,0 +1,36 @@
+{% extends "layouts/form_layout.html" %}
+
+{% block title_form %}
+<h2 style="color: white;">Create User</h2> 
+{% endblock %}
+
+{% block body_form %}
+<form action="{{ url_for('usercreate')}}" method="get">
+    <h5>Enter the user details</h5>
+    <div>
+        <input type="text" name="ufname" placeholder="First Name">
+    </div>
+    <div>
+        <input type="text" name="ulname" placeholder="Last Name">
+    </div>
+    <div>
+        <input type="email" name="email" placeholder="Email">
+    </div>
+    <div>
+        <input type="password" name="password" placeholder="Password">
+    </div>
+    {% if admin %}
+    <div>
+        <select name="role" class="hidden">
+            <option value="P">Patron</option>
+            <option value="A">Admin</option>
+        </select>
+    </div>
+    {% endif %}
+    <div>
+        <button type="submit">Create</button>
+    </div>
+</form>
+<p style="color: white">{{ msg }}</p>
+
+{% endblock %}
