@@ -138,7 +138,6 @@ init_db()
 
 @app.route("/", methods=['GET','POST'])
 def index():
-    session['admin'] = False
     if request.method == 'POST':
         #get the email and password from the form
         email = request.form['email']
@@ -148,12 +147,12 @@ def index():
         user = users.query.filter_by(email=email).first()
         #if the user exists and the password is correct, log them in
         if user and user.password == password:
-            # flash('You have been logged in', 'success')
+            flash('You have been logged in', 'success')
             session["user_email"] = email
             session["user_password"] = password
             session["user_id"] = users.query.filter(users.email == email).first().user_id
             session["admin"] = users.query.filter(users.email == email).first().role == 'A'
-            return redirect(url_for('home'))
+            return render_template("home.html")
         else:
             #if the user does not exist or the password is incorrect, flash an error message
             flash('Invalid email or password', 'danger')
@@ -163,14 +162,7 @@ def index():
 # function to direct user to home after login
 @app.route('/home')
 def home():
-    if session['admin']:
-        return render_template('home.html')
-    else:
-        return redirect(url_for('home_patron'))
-    
-@app.route('/home_patron')
-def home_patron():
-    return render_template('home_patron.html')
+    return render_template('home.html')
 
 @app.route('/paintings', methods = ['GET'])
 def paintings():
@@ -199,12 +191,8 @@ def paintings():
     paintings = paintings_query.paginate(page=page, per_page=per_page)
     #get all the creators so we can display the artist of each painting
     all_creators = creator.query.all()
-
-    #get all the users so we can display the owner of each painting
-    owners = users.query.all()
-
     #render the paintings page with all the required info
-    return render_template("paintings.html", paintings = paintings.items, creators = all_creators, owners=owners , pagination = paintings, query=query, sort_by = sort_by)
+    return render_template("paintings.html", paintings = paintings.items, creators = all_creators, pagination = paintings, query=query, sort_by = sort_by)
 
 @app.route('/buy_menu', methods = ['GET'])
 def buy_menu():
@@ -238,29 +226,14 @@ def buy_menu():
 
 @app.route('/buy_painting/<int:piece_id>', methods = ['POST'])
 def buy_painting(piece_id):
+    # TODO: need to get the user id from the session so that we can update the owner_id of the painting
+    # can probably get the user id from the session by looking at the users table and finding the user with the email that is in the session
+    # TODO: create a transaction in the transactions table every time a painting is bought
     # TODO: ask the user once they buy a painting if they want to keep it in the gallery. If not then viewable will be set to false and the painting will then have the requirements to be deleted from the database (sellable & viewable = false means the painting should be deleted)
     #might tweak this later
-    buyer_email = session.get("user_email")
-    if not buyer_email:
-        flash('You must be logged in to buy a painting', 'danger')
-        return redirect(url_for('index'))
-    
-    buyer = users.query.filter_by(email=buyer_email).first()
-    if not buyer:
-        flash('User not found', 'danger')
-        return redirect(url_for('index'))
-    
     painting = art_piece.query.get(piece_id)
     if painting and painting.sellable:
-        #painting is no longer sellable after being bought
         painting.sellable = False
-
-        #create a transaction for the purchase
-        trans = transaction(piece_id=piece_id, buyer_id=buyer.user_id, seller_id=painting.owner_id)
-
-        #change the owner of the painting to the buyer
-        painting.owner_id = buyer.user_id
-        db.session.add(trans)
         db.session.commit()
         flash(f'Painting "{painting.title}" purchased successfully', 'success')
         return redirect(url_for('buy_menu'))
@@ -270,17 +243,6 @@ def buy_painting(piece_id):
 
 @app.route('/delete_paintings', methods = ['GET', 'POST'])
 def delete_paintings():
-    user_email = session.get("user_email")
-    if not user_email:
-        flash('You must be logged in to delete a painting', 'danger')
-        return redirect(url_for('index'))
-    
-    user = users.query.filter_by(email=user_email).first()
-    if not user:
-        flash('User not found', 'danger')
-        return redirect(url_for('index'))
-    user_role = user.role
-
     if request.method == 'POST':
         #get the id of the painting to delete
         painting_id = request.form['painting_id']
@@ -303,11 +265,8 @@ def delete_paintings():
             flash(f'Error deleting painting: {e}', 'danger')
         #go back to the delete paintings page
         return redirect(url_for('delete_paintings'))
-    #based on the user role, either show all paintings or only the ones they own
-    if user_role == 'A':
-        paintings = art_piece.query.all()
-    else:
-        paintings = art_piece.query.filter_by(owner_id=user.user_id).all()
+    #get all the paintings
+    paintings = art_piece.query.all()
     #render the delete paintings page with all the paintings
     return render_template("d_painting.html", paintings = paintings)
 
@@ -343,8 +302,6 @@ def create_painting():
     creators = creator.query.all()
     return render_template("c_painting.html", creators=creators)
 
-
-
 @app.route('/update_paintings', methods=['GET', 'POST'])
 def update_paintings():
     if request.method == 'POST':
@@ -369,44 +326,30 @@ def update_paintings():
     creators = creator.query.all()
     return render_template("u_painting.html", paintings=paintings, creators=creators)
 
-
 #this is the main function that runs the app
 if __name__ == '__main__':
     app.run(debug = True)
 
 # Read creator function for display
 def getcreator():
-    return creator.query.all()
+    query = select(creator)
+    result = db.session.execute(query)
+
+    creator_list = []
+    for creators in result.scalars():
+        creator_list.append((creators.creator_fname, creators.creator_lname, creators.birth_country, creators.birth_date, creators.death_date))
+    return creator_list
 
 # Function to get creator names mapped to IDs
 def get_creator_names():
-    creators = creator.query.all()
-    creator_names = {f"{creator.creator_fname} {creator.creator_lname}": creator.creator_id for creator in creators}
-    return creator_names
-
-# Read transaction function for display
-def gettransaction():
-    query = select(transaction)
-    result = db.session.execute(query)
-
-    transaction_list = []
-    for transactions in result.scalars():
-        chosen_art_piece=db.session.query(art_piece).filter(art_piece.piece_id== transactions.piece_id).first()
-        buyer=db.session.query(users).filter(users.user_id== transactions.buyer_id).first()
-        seller=db.session.query(users).filter(users.user_id== transactions.seller_id).first()
-        transaction_list.append((chosen_art_piece.title, buyer.user_fname, buyer.user_lname, seller.user_fname, seller.user_lname, transactions.timestamp))
-    return transaction_list
-
-# Function to get user names mapped to IDs
-def get_art_piece_titles():
-    query = select(art_piece)
+    query = select(creator)
     result = db.session.execute(query)
     
-    art_piece_titles = {}
-    for chosen_art_piece in result.scalars():
-        full_title = f"{chosen_art_piece.title}"
-        art_piece_titles[full_title] = chosen_art_piece.piece_id
-    return art_piece_titles
+    creator_names = {}
+    for creators in result.scalars():
+        full_name = f"{creators.creator_fname} {creators.creator_lname}"
+        creator_names[full_name] = creators.creator_id
+    return creator_names
 
 # Function to get user names mapped to IDs
 def get_user_names():
@@ -418,6 +361,17 @@ def get_user_names():
         full_name = f"{user.user_fname} {user.user_lname}"
         user_names[full_name] = user.user_id
     return user_names
+
+# Function to get user names mapped to IDs
+def get_art_piece_titles():
+    query = select(art_piece)
+    result = db.session.execute(query)
+    
+    art_piece_titles = {}
+    for chosen_art_piece in result.scalars():
+        full_title = f"{chosen_art_piece.title}"
+        art_piece_titles[full_title] = chosen_art_piece.piece_id
+    return art_piece_titles
 
 # Function to get transaction info mapped to IDs
 def get_transaction_info():
@@ -500,33 +454,35 @@ def creatorupdate():
     death_date = request.form["ddate"]
 
     creator_names = get_creator_names()
-    creator_id = creator_names.get(creator_name)
-    
-    if not creator_id:
-        return updatecreators(feedback_message=f'Creator {creator_name} not found.', feedback_type=False)
+    if creator_name in creator_names:
+        creator_id = creator_names[creator_name]
     
     try:
-        obj = creator.query.filter_by(creator_id=creator_id).first()
+        obj = db.session.query(creator).filter(
+            creator.creator_id == creator_id).first()
         
-        if not obj:
-            return updatecreators(feedback_message=f'Creator {creator_name} not found.', feedback_type=False)
+        if obj is None:
+            msg = 'Creator {} not found.'.format(creator_name)
+            return updatecreators(feedback_message=msg, feedback_type=False)
 
-        if creator_fname:
+        if creator_fname != '':
             obj.creator_fname = creator_fname
-        if creator_lname:
+        if creator_lname != '':
             obj.creator_lname = creator_lname
-        if birth_country:
+        if birth_country != '':
             obj.birth_country = birth_country
-        if birth_date:
+        if birth_date != '':
             obj.birth_date = birth_date
-        if death_date:
+        if death_date != '':
             obj.death_date = death_date
 
         db.session.commit()
-        return updatecreators(feedback_message=f'Successfully updated creator {creator_name}', feedback_type=True)
     except Exception as err:
         db.session.rollback()
         return updatecreators(feedback_message=str(err), feedback_type=False)
+
+    return updatecreators(feedback_message='Successfully updated creator {}'.format(creator_name),
+                          feedback_type=True)
 
 @app.route("/transactionupdate", methods=['POST'])
 def transactionupdate():
@@ -624,55 +580,6 @@ def createcreator(feedback_message=None, feedback_type=False):
             feedback_message=feedback_message, 
             feedback_type=feedback_type)
 
-@app.route("/creatorcreate", methods=['POST'])
-def creatorcreate():
-    creator_fname = request.form["cfname"]
-    creator_lname = request.form["clname"]
-    birth_country = request.form["country"]
-    birth_date = request.form["bdate"]
-    death_date = request.form["ddate"]
-    nobdate = request.form.get("nobdate")
-    ifalive = request.form.get("ifalive")
-
-    if nobdate == 'on':
-        birth_date = None
-    elif birth_date == '':
-        return createcreator(feedback_message='Birth date is required unless "Unknown Birth Date" is checked.', feedback_type=False)
-
-    if ifalive == 'on':
-        death_date = None
-    elif death_date == '':
-        return createcreator(feedback_message='Death date is required unless "Unknown or Alive" is checked.', feedback_type=False)
-
-    # Check if a creator with the same first name and last name already exists
-    existing_creator = db.session.query(creator).filter_by(
-        creator_fname=creator_fname, creator_lname=creator_lname).first()
-
-    if existing_creator:
-        return createcreator(feedback_message=f'A creator named {creator_fname} {creator_lname} already exists.', feedback_type=False)
-
-    # Check if birth date and death date are missing
-    if birth_date is None and nobdate != 'on':
-        return createcreator(feedback_message='Birth date is required unless "Unknown Birth Date" is checked.', feedback_type=False)
-    
-    if death_date is None and ifalive != 'on':
-        return createcreator(feedback_message='Death date is required unless "Unknown or Alive" is checked.', feedback_type=False)
-
-    try:
-        new_creator = creator(
-            creator_fname=creator_fname, 
-            creator_lname=creator_lname, 
-            birth_country=birth_country, 
-            birth_date=birth_date, 
-            death_date=death_date
-        )
-        db.session.add(new_creator)
-        db.session.commit()
-        return createcreator(feedback_message=f'Successfully added creator {creator_fname} {creator_lname}', feedback_type=True)
-    except Exception as err:
-        db.session.rollback()
-        return createcreator(feedback_message=f'Database error: {err}', feedback_type=False)
-
 # create transaction function 
 @app.route("/createtransaction")
 def createtransaction(feedback_message=None, feedback_type=False):
@@ -687,7 +594,27 @@ def createtransaction(feedback_message=None, feedback_type=False):
                            feedback_message=feedback_message, 
                            feedback_type=feedback_type)
 
+@app.route("/creatorcreate", methods=['POST'])
+def creatorcreate():
+    creator_fname = request.form["cfname"]
+    creator_lname = request.form["clname"]
+    birth_country = request.form["country"]
+    birth_date = request.form["bdate"]
+    death_date = request.form["ddate"]
 
+    try:
+        entry = creator(creator_fname=creator_fname, creator_lname=creator_lname, birth_country=birth_country, birth_date=birth_date, death_date=death_date)
+        db.session.add(entry)
+        db.session.commit()
+    except exc.IntegrityError as err:
+        db.session.rollback()
+        return createcreator(feedback_message='A creator named {} already exists. Create a creator with a different name.'.format(creator_fname), feedback_type=False)
+    except Exception as err:
+        db.session.rollback()
+        return createcreator(feedback_message='Database error: {}'.format(err), feedback_type=False)
+
+    return createcreator(feedback_message='Successfully added creator {}'.format(creator_fname),
+                       feedback_type=True)
 
 @app.route("/transactioncreate", methods=['POST'])
 def transactioncreate():
@@ -777,28 +704,26 @@ def creatordelete():
     #     return deletecreator(feedback_message='Operation canceled. Creator not deleted.', feedback_type=False)
     
     creator_names = get_creator_names()
-    creator_id = creator_names.get(creator_name)
-
-    if not creator_id:
-        return deletecreator(feedback_message=f'Creator {creator_name} not found.', feedback_type=False)
+    if creator_name in creator_names:
+        creator_id = creator_names[creator_name]
+    else:
+        return deletecreator(feedback_message='Creator not found.', feedback_type=False)
 
     try:
-        obj = creator.query.filter_by(creator_id=creator_id).first()
+        obj = db.session.query(creator).filter(
+            creator.creator_id == creator_id).first()
         
-        if not obj:
-            return deletecreator(feedback_message=f'Creator {creator_name} not found.', feedback_type=False)
+        if obj is None:
+            msg = f'Creator {creator_name} not found.'
+            return deletecreator(feedback_message=msg, feedback_type=False)
         
-        # Check if the creator is associated with any art pieces
-        associated_art_pieces = db.session.query(art_piece).filter_by(creator_id=creator_id).all()
-        if associated_art_pieces:
-            return deletecreator(feedback_message=f'Creator {creator_name} is associated with an art piece, and cannot be deleted.', feedback_type=False)
-
         db.session.delete(obj)
         db.session.commit()
-        return deletecreator(feedback_message=f'Successfully deleted creator {creator_name}', feedback_type=True)
     except Exception as err:
         db.session.rollback()
-        return deletecreator(feedback_message=f'Database error: {err}', feedback_type=False)
+        return deletecreator(feedback_message=str(err), feedback_type=False)
+
+    return deletecreator(feedback_message=f'Successfully deleted creator {creator_name}', feedback_type=True)
 
 @app.route("/transactiondelete", methods=['POST'])
 def transactiondelete():
@@ -958,7 +883,6 @@ def userdelete():
         result = db.session.execute(select(users))
     else:
         result = db.session.execute(select(users).where(users.user_id == session['user_id']))
-
     for user in result.scalars():
         userlist.append(user.email) 
 
@@ -969,7 +893,6 @@ def userdelete():
         session.pop('msg')
     except:
         msg = None
-
     return render_template('d_user.html', userlist=userlist, msg=msg, admin=session['admin'], feedback_message=msg, feedback_type=successs)
 
 @app.route("/userdelete_temp", methods=['get'])
@@ -985,7 +908,7 @@ def userdelete_temp():
             session['msg'] = 'User delete success'
             session['feedback_type'] = True
 
-        except IntegrityError as e:
-            session['msg'] = 'User delete fail. Integrity Error'
+        except Exception as e:
+            session['msg'] = f'User delete fail. {str(e)}'
             session['feedback_type'] = False
     return redirect("/userdelete")
