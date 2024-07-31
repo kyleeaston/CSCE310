@@ -1,0 +1,22 @@
+
+{% extends "layouts/form_layout.html" %}
+
+{% block title_form %}
+<h2 style="color: white;">Delete Transactions</h2> 
+{% endblock %}
+
+{% block body_form %}
+<form action="{{ url_for('transactiondelete')}}" method="post">
+  <label for="transactioninfos">Select a transation</label>
+  <select name="transactioninfos">
+    {% for info in transactioninfos %}
+      <option value="{{ info }}">{{ info }}</option>
+    {% endfor %} 
+  </select>
+  <div>
+    <!-- <input type="hidden" id="confirmInput" name="confirmInput">  -->
+    <button type="submit" name="delete_button" value="delete_button"> Delete </button>
+  </div>
+</form>
+
+{% endblock %}

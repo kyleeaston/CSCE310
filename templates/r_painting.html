@@ -54,11 +54,6 @@
                     <p class="painting-details">Year: {{ painting.year_finished }}</p>
                     <p class="painting-details">Period: {{ painting.period }}</p>
                     <p class="painting-details">Price: ${{ painting.cost }}</p>
-                    {% for owner in owners %}
-                        {% if owner.user_id == painting.owner_id  %}
-                            <p class="painting-details">Current Owner: {{ owner.user_fname }} {{ owner.user_lname }}</p>
-                        {% endif %}
-                    {% endfor %}
                     <img src="{{ painting.photo_link }}" alt="{{ painting.title }}" style="max-width: 50vh; max-height: 50vh;">
                 </li>
             {% endfor %}

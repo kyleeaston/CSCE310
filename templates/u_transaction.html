@@ -1,0 +1,40 @@
+{% extends "layouts/form_layout.html" %}
+
+{% block title_form %}
+<h2 style="color: white;">Update Transactions</h2> 
+{% endblock %}
+
+{% block body_form %}
+<form action="{{ url_for('transactionupdate')}}" method="post">
+    <div>
+        <label for="transactioninfos">Select a transaction to update</label>
+        <select name="transactioninfos">
+            {% for info in transactioninfos %}
+                <option value="{{ info }}">{{ info }}</option>
+            {% endfor %} 
+        </select>
+    </div>
+    <h5>Enter the updated transaction details</h5>
+    <div>
+        <input type="text" name="title" placeholder="Art Piece Title">
+    </div>
+    <div>
+        <input type="text" name="bfname" placeholder="Buyer First Name">
+    </div>
+    <div>
+        <input type="text" name="blname" placeholder="Buyer Last Name">
+    </div>
+    <div>
+        <input type="text" name="sfname" placeholder="Seller First Name">
+    </div>
+    <div>
+        <input type="text" name="slname" placeholder="Seller Last Name">
+    </div>
+    <div>
+        <input type="date" name="timestamp" placeholder="Date of Purchase">
+    </div>
+    <div>
+        <button type="submit">Update</button>
+    </div>
+</form>
+{% endblock %}

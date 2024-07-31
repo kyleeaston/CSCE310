@@ -1,0 +1,44 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Home {% endblock %}
+
+{% block body_base %}
+
+<h2 style="color: white;"> Create </h2> 
+<div class="button-row">
+    <a href="/create_painting"><button> Create artpiece </button></a>
+    <a href="/createcreator"><button> Create Creator </button></a>
+    <a href="/createtransaction"><button> Create Transaction </button></a>
+    <a href="/usercreate"><button> Create User </button></a>
+</div>
+
+<br/>
+<h2 style="color: white;"> Read </h2> 
+<div class="button-row">
+    <a href="/paintings"><button> Read artpiece </button></a>
+    <a href="/readcreator"><button> Read Creator </button></a>
+    <a href="/readtransaction"><button> Read Transaction </button></a>
+    <a href="/userread"><button> Read User </button></a>
+</div>
+<br/>
+<h2 style="color: white;"> Update </h2> 
+<div class="button-row"> 
+    <a href="/update_paintings"><button> Update artpiece </button></a>
+    <a href="/userupdate"><button> Update User </button></a>
+</div>
+<br/>
+<h2 style="color: white;"> Delete </h2> 
+<div class="button-row">
+    <a href="/delete_paintings"><button> Delete artpiece </button></a>
+    <a href="/deletetransaction"><button> Delete Transaction </button></a>
+    <a href="/userdelete"><button> Delete User </button></a>
+</div>
+<br>
+<div>
+    <a href="/buy_menu"><button>Buy A Painting</button></a>
+</div>
+<div>
+    <a href="/"><button>Log Out</button></a>
+</div>
+
+{% endblock %}

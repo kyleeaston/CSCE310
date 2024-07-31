@@ -1,0 +1,33 @@
+{% extends "layouts/form_layout.html" %}
+
+{% block title_form %}
+<h2 style="color: white;">Create Transactions</h2> 
+{% endblock %}
+
+{% block body_form %}
+<form action="{{ url_for('transactioncreate')}}" method="post">
+    <h5>Enter the transaction details</h5>
+    <div>
+        <input type="text" name="title" placeholder="Art Piece Title">
+    </div>
+    <div>
+        <input type="text" name="bfname" placeholder="Buyer First Name">
+    </div>
+    <div>
+        <input type="text" name="blname" placeholder="Buyer Last Name">
+    </div>
+    <div>
+        <input type="text" name="sfname" placeholder="Seller First Name">
+    </div>
+    <div>
+        <input type="text" name="slname" placeholder="Seller Last Name">
+    </div>
+    <div>
+        <input type="date" name="timestamp" placeholder="Date of Purchase">
+    </div>
+    <div>
+        <button type="submit">Create</button>
+    </div>
+</form>
+
+{% endblock %}

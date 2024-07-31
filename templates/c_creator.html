@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block body_form %}
-<form action="{{ url_for('creatorcreate')}}" method="post">
+<form action="{{ url_for('creatorcreate')}}" method="post" id="creatorForm">
     <h5>Enter the creator details</h5>
     <div>
         <input type="text" name="cfname" placeholder="First Name">
@@ -17,14 +17,52 @@
         <input type="text" name="country" placeholder="Birth Country">
     </div>
     <div>
-        <input type="date" name="bdate" placeholder="Birth Date">
+        <label for="nobdate"> Is the creator's birth date unknown?</label>
+        <input type="checkbox" name="nobdate" id="nobdate">
+        <label for="bdate"> Birth Date </label>
+        <input type="date" name="bdate" id="bdate" placeholder="Birth Date">
     </div>
     <div>
-        <input type="date" name="ddate" placeholder="Death Date">
+        <label for="ifalive"> Is the creator still living or death unknown?</label>
+        <input type="checkbox" name="ifalive" id="ifalive">
+        <label for="ddate"> Death Date </label>
+        <input type="date" name="ddate" id="ddate" placeholder="Death Date">
     </div>
     <div>
         <button type="submit">Create</button>
     </div>
 </form>
+<script>
+    document.getElementById('nobdate').addEventListener('change', function() {
+        var birthDateInput = document.getElementById('bdate');
+        if (this.checked) {
+            birthDateInput.disabled = true;
+            birthDateInput.value = '';  // Clear the birth date if unknown
+        } else {
+            birthDateInput.disabled = false;
+        }
+    });
+    document.getElementById('ifalive').addEventListener('change', function() {
+        var deathDateInput = document.getElementById('ddate');
+        if (this.checked) {
+            deathDateInput.disabled = true;
+            deathDateInput.value = '';  // Clear the death date if the creator is alive
+        } else {
+            deathDateInput.disabled = false;
+        }
+    });
+    document.getElementById('creatorForm').addEventListener('submit', function() {
+    var deathDateInput = document.getElementById('ddate');
+    var birthDateInput = document.getElementById('bdate');
+    if (deathDateInput.disabled) {
+        deathDateInput.disabled = false;
+        deathDateInput.value = '0'
+    }
+    if (birthDateInput.disabled) {
+        birthDateInput.disabled = false;
+        birthDateInput.value = '0'
+    }
+    });
+</script>
 
 {% endblock %}

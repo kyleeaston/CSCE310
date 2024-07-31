@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Paintings</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/paintings.css')}}">
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='images/wallpaper3.png') }}");
+        }
+        li{
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<a href="/home"><button class="search-button-reset" style="background-color: rgba(172, 169, 169, 0.65);">Go Back</button></a>
+<body>
+    <div class= "container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flashes">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}"> {{message}} </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+        {% endwith %}
+        <h1>Manage Paintings</h1>
+        <ul class="painting-list">
+            {% for painting in paintings %}
+                <li class = "painting-item" style="text-align:center;">
+                    <img src="{{ painting.photo_link }}" alt="{{ painting.title }}" style="max-width:25vh; max-height:25vh; display:block; margin: 0 auto 2vh;">
+                    <p style="font-size: 4vh;">{{ painting.title }}</p>
+                    <p style="font-size: 4vh;">{{ painting.period }}</p>
+                    <form method="POST" style="display:inline;">
+                        <input type="hidden" name="painting_id" value="{{ painting.piece_id }}">
+                        <button class ="delete-button" type="submit">Delete</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

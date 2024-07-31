@@ -1,0 +1,28 @@
+{% extends "layouts/table_layout.html" %}
+
+{% block title_table %}
+<h2 style="color: white;">Transactions</h2> 
+{% endblock %}
+
+{% block body_table %}
+<table>
+    <tr>
+        <th>Title</th>
+        <th>Buyer First Name</th>
+        <th>Buyer Last Name</th>
+        <th>Seller First Name</th>
+        <th>Seller Last Name</th>
+        <th>Timestamp</th>
+    </tr>
+    {% for title, buyer_fname, buyer_lname, seller_fname, seller_lname, timestamp in transactionlist%}
+    <tr>
+        <td>{{ title }}</td>
+        <td>{{ buyer_fname }}</td>
+        <td>{{ buyer_lname }}</td>
+        <td>{{ seller_fname }}</td>
+        <td>{{ seller_lname }}</td>
+        <td>{{ timestamp }}</td>
+    </tr>
+    {% endfor %}    
+</table>
+{% endblock %}
