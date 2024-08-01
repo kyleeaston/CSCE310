@@ -1,26 +1,43 @@
 {% extends "layouts/table_layout.html" %}
 
 {% block title_table %}
-<h2 style="color: white;">Creators</h2> 
+<h2 style="color: white;">Creators List</h2> 
 {% endblock %}
 
 {% block body_table %}
 <table>
-    <tr>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Birth Place</th>
-        <th>Birth Date</th>
-        <th>Death Date</th>
-    </tr>
-    {% for fname, lname, birthplace, bdate, ddate in creatorlist%}
-    <tr>
-        <td>{{ fname }}</td>
-        <td>{{ lname }}</td>
-        <td>{{ birthplace }}</td>
-        <td>{{ bdate }}</td>
-        <td>{{ ddate }}</td>
-    </tr>
-    {% endfor %}    
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Birth Country</th>
+            <th>Birth Date</th>
+            <th>Death Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for creator in creatorlist %}
+        <tr>
+            <td>{{ creator.creator_fname }}</td>
+            <td>{{ creator.creator_lname }}</td>
+            <td>{{ creator.birth_country }}</td>
+            <td>
+                {% if creator.birth_date is none %}
+                    -
+                {% else %}
+                    {{ creator.birth_date }}
+                {% endif %}
+                </td>
+    
+            <td>
+            {% if creator.death_date is none %}
+                -
+            {% else %}
+                {{ creator.death_date }}
+            {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 {% endblock %}

@@ -15,21 +15,31 @@
         </select>
     </div>
     <h5>Enter the updated transaction details</h5>
+    <label for="artpieces">Enter the updated art piece</label>
     <div>
-        <input type="text" name="title" placeholder="Art Piece Title">
+        <select name="artpieces">
+            {% for artpiece in artpieces %}
+                <option value="{{ artpiece }}">{{ artpiece }}</option>
+            {% endfor %} 
+        </select>
     </div>
+    <label for="buyers">Enter the updated buyer</label>
     <div>
-        <input type="text" name="bfname" placeholder="Buyer First Name">
+        <select name="buyers">
+            {% for buyer in buyers %}
+                <option value="{{ buyer }}">{{ buyer }}</option>
+            {% endfor %} 
+        </select>
     </div>
+    <label for="sellers">Enter the updated seller</label>
     <div>
-        <input type="text" name="blname" placeholder="Buyer Last Name">
+        <select name="sellers">
+            {% for seller in sellers %}
+                <option value="{{ seller }}">{{ seller }}</option>
+            {% endfor %} 
+        </select>
     </div>
-    <div>
-        <input type="text" name="sfname" placeholder="Seller First Name">
-    </div>
-    <div>
-        <input type="text" name="slname" placeholder="Seller Last Name">
-    </div>
+    <label for="timestamp">Enter the updated timestamp</label>
     <div>
         <input type="date" name="timestamp" placeholder="Date of Purchase">
     </div>
