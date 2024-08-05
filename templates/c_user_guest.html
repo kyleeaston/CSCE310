@@ -1,12 +1,12 @@
 <!-- Written by Kyle Easton -->
-{% extends "layouts/form_layout.html" %}
+{% extends "layouts/form_layout_guest.html" %}
 
 {% block title_form %}
 <h2 style="color: white;">Create User</h2> 
 {% endblock %}
 
 {% block body_form %}
-<form action="{{ url_for('usercreate_temp')}}" method="get">
+<form action="{{ url_for('usercreate_temp_guest')}}" method="get">
     <h5>Enter the user details</h5>
     <div>
         <input type="text" name="ufname" placeholder="First Name">

@@ -1,3 +1,4 @@
+-- ENTIRE FILE WRITTEN BY BLAKE DEJOHN
 -- insert the museum as a user
 INSERT INTO users (user_fname, user_lname, email, password, role) VALUES('The', 'Museum', 'N/A', 'password', 'A');
 

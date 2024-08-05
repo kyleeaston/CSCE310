@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paintings</title>
+    <title>Guest View of Paintings</title>
     <link rel="stylesheet" href="{{url_for('static', filename='css/paintings.css')}}">
     <style>
         body {
@@ -12,7 +12,7 @@
         }
     </style>
 </head>
-<a href="/home"><button class="search-button-reset" style="background-color: rgba(172, 169, 169, 0.65);">Go Back</button></a>
+<a href="/"><button class="search-button-reset" style="background-color: rgba(172, 169, 169, 0.65);">Go Back</button></a>
 <body>
     <div class="container">
 
@@ -22,22 +22,22 @@
             <span>Page {{pagination.page}} of {{pagination.pages}}</span>
             <div class="pagination-buttons">
                 {% if pagination.has_prev %}
-                <a class = "pagination-button" href="{{ url_for('paintings',page=pagination.prev_num, query=query, sort_by = sort_by) }}">Previous</a>
+                <a class = "pagination-button" href="{{ url_for('paintings_guest',page=pagination.prev_num, query=query, sort_by = sort_by) }}">Previous</a>
                 {% endif %}
                 {% if pagination.has_next %}
-                <a class = "pagination-button" href="{{ url_for('paintings', page=pagination.next_num, query=query, sort_by = sort_by) }}">Next</a>
+                <a class = "pagination-button" href="{{ url_for('paintings_guest', page=pagination.next_num, query=query, sort_by = sort_by) }}">Next</a>
                 {% endif %}
             </div>
         </div>
 
-        <form id = "search-form" class="search-form" action="/paintings" method = "get">
+        <form id = "search-form" class="search-form" action="/paintings_guest" method = "get">
             <input type="text" name="query" value = "{{ query }}" placeholder="Search paintings..." class="search-input">
             <select id = "sort-by" name="sort_by" class = "search-input">
                 <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Sort by Title</option>
                 <option value="year" {% if sort_by == 'year' %}selected{% endif %}> Sort by Year</option>
             </select>
             <button type="submit" class = "search-button">Search</button>
-            <a href = "/paintings" class="search-button-reset">Reset Search</a>
+            <a href = "/paintings_guest" class="search-button-reset">Reset Search</a>
         </form>
 
         {% if paintings %}
@@ -66,16 +66,16 @@
         </ul>
         {% else %}
         <p class="no-results">No paintings found for your search query.</p>
-        <a href = "/paintings" class="no-results">Go back to all paintings</a>
+        <a href = "/paintings_guest" class="no-results">Go back to all paintings</a>
         {% endif %}
         <div class="pagination">
             <span>Page {{pagination.page}} of {{pagination.pages}}</span>
             <div class="pagination-buttons">
                 {% if pagination.has_prev %}
-                <a class = "pagination-button" href="{{ url_for('paintings',page=pagination.prev_num, query=query, sort_by = sort_by) }}">Previous</a>
+                <a class = "pagination-button" href="{{ url_for('paintings_guest',page=pagination.prev_num, query=query, sort_by = sort_by) }}">Previous</a>
                 {% endif %}
                 {% if pagination.has_next %}
-                <a class = "pagination-button" href="{{ url_for('paintings', page=pagination.next_num, query=query, sort_by = sort_by) }}">Next</a>
+                <a class = "pagination-button" href="{{ url_for('paintings_guest', page=pagination.next_num, query=query, sort_by = sort_by) }}">Next</a>
                 {% endif %}
             </div>
         </div>

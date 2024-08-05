@@ -1,3 +1,6 @@
+/* 
+    ENTIRE FILE WRITTEN BY BLAKE DEJOHN
+*/
 body {
     background-size: cover;
     background-repeat: no-repeat;
@@ -128,4 +131,16 @@ body {
     border: 0;
     background-color: rgba(16, 162, 82, 0.662);
     cursor: pointer;
+}
+.guest-button{
+    position: absolute;
+    top: 1vh;
+    right: 1vh;
+    font-size: 2vh;
+    padding: 1vh;
+    border-radius: 1vh;
+    border: 0;
+    background-color: rgba(16, 162, 82, 0.662);
+    cursor: pointer;
+    margin: 2vh;
 }

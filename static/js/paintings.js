@@ -1,3 +1,8 @@
+/*
+
+ENTIRE FILE WRITTEN BY BLAKE DEJOHN 
+
+*/
 document.getElementById('sort-by').addEventListener('change', function(){
     document.getElementById('search-form').submit();
 });
@@ -19,4 +24,16 @@ function openCreateCreatorWindow(event) {
         'createcreator', // Window name
         'width=600,height=400' // Window size
     );
+}
+
+function toggleInput(checkbox, inputId){
+    const input = document.getElementById(inputId);
+    if(checkbox.checked){
+        input.value = 'Unknown';
+        input.disabled = true;
+    }
+    else{
+        input.value = '';
+        input.disabled = false;
+    }
 }
