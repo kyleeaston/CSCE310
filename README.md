@@ -1,9 +1,7 @@
 # CSCE 310 Summer 2024 Database Systems Project (The Artfolio Gallery Application)
-
-## If everything goes well...
+## Notice
+This application was developed as a group project for CSCE 310 at Texas A&M University. The public URL is no longer supported.
 Our application is hosted in the cloud using Heroku. You can access it by clicking [here](https://csce-310-artfolio-8885d6fafd86.herokuapp.com/).
-
-If for some reason the link is not working, the instructions below can be followed to run the application locally.
 
 ## Requirements
 - The only requirements someone will need to run this application are Python 3.8 or higher and Git. You can download Python from [here](https://www.python.org/downloads/) and Git from [here](https://git-scm.com/downloads).
